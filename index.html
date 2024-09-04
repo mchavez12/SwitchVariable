@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Valores</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+
+        #Ktms {
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        #Kvaluetms {
+            font-size: 1.5em;
+            color: #007BFF;
+            display: block;
+            margin: 10px 0;
+        }
+
+        #TM {
+            color: #333;
+            font-size: 1.2em;
+            margin-top: 20px;
+            display: block;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/particle-api-js@8/dist/particle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Control de valores de TMS</h1>
+        <h4>Hecho por: Mauricio Chávez y Nadia Michelle</h4>
+        <input type="range" min="5" max="20" step="1" value="5" class="slider" id="Ktms">
+        <output for="Ktms" id="Kvaluetms">5</output>
+        <span id="TM">[25]</span> 
+    </div>
+
+    <script>
+        var particle = new Particle();
+        var token;
+
+        particle.login({ username: 'mchavez12@ucol.mx', password: 'Guest123#45' }).then(
+            function (data) {
+                token = data.body.access_token;
+            },
+            function (err) {
+                console.log('Could not log in.', err);
+            }
+        );
+
+        function updateTMS() {
+            var Ktms = document.getElementById('Ktms');
+            var output = document.getElementById('Kvaluetms');
+            var TM = document.getElementById('TM');
+
+            output.innerHTML = Ktms.value;  
+            TM.innerHTML = `[${Ktms.value * 5}]`; 
+
+            var Salida = Ktms.value;
+            particle.callFunction({
+                deviceId: '1d0027000e47313037363132',
+                name: 'TMS_2',
+                argument: Salida,
+                auth: token
+            }).then(
+                function (data) {
+                    console.log('Function called successfully', data);
+                },
+                function (err) {
+                    console.log('Function call failed', err);
+                }
+            );
+        }
+
+        document.getElementById('Ktms').addEventListener('change', updateTMS);
+
+        updateTMS();
+    </script>
+</body>
+
+</html>
